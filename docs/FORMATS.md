@@ -21,7 +21,7 @@ that the format holds and OpenWrite can show).
 | Format | Open | Save | Knowledge | Phase | State |
 | --- | --- | --- | --- | --- | --- |
 | ODT, OpenDocument Text (`.odt`), its template (`.ott`) and flat XML (`.fodt`) | Yes | Yes, the default | Spec: OASIS ODF 1.2 and 1.3, ISO/IEC 26300 | W1 | Saving: Formatting (libowf 0.1: paragraphs, text formatting, tabs, headers, footers, fields; no lists, tables or pictures yet). Opening: to do |
-| DOCX, Office Open XML (`.docx`) and its template (`.dotx`) | Yes | Yes | Spec: ECMA-376 / ISO/IEC 29500 (transitional) | W1 | To do |
+| DOCX, Office Open XML (`.docx`) and its template (`.dotx`) | Yes | Yes | Spec: ECMA-376 / ISO/IEC 29500 (transitional) | W1 | Saving: Formatting (libowf 0.1: paragraphs, text formatting, tabs, headers, footers, fields; no lists, tables or pictures yet). Opening: to do |
 | RTF (`.rtf`) | Yes | Yes | Spec: Microsoft's RTF 1.9.1 | W1 | To do |
 | HTML (`.html`) | Yes | Yes | Spec: HTML and CSS; OpenWrite's own shape (DESIGN.md section 5) | W1 | Saving: Formatting (libowf 0.1). Opening: with the editor |
 | Plain text (`.txt`), Amiga ISO-8859-1 or UTF-8 | Yes | Yes | n/a | W1 | Full (libowf 0.1) |

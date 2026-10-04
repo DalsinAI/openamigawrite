@@ -137,6 +137,39 @@ def check_odt(name, data):
     return parts
 
 
+def check_docx(name, data):
+    path = name + ".check.docx"
+    with open(path, "wb") as f:
+        f.write(data)
+    try:
+        z = zipfile.ZipFile(path)
+    except zipfile.BadZipFile as e:
+        check(f"{name} docx zip", False, str(e))
+        return {}
+    check(f"{name} docx zip test", z.testzip() is None)
+    parts = {}
+    for info in z.infolist():
+        text = z.read(info.filename).decode("utf-8")
+        try:
+            xml.dom.minidom.parseString(text)
+        except Exception as e:
+            check(f"{name} docx {info.filename} well-formed", False, str(e))
+        parts[info.filename] = text
+    for part in ("[Content_Types].xml", "_rels/.rels", "word/document.xml", "word/styles.xml",
+                 "word/_rels/document.xml.rels", "docProps/core.xml", "docProps/app.xml"):
+        check(f"{name} docx has {part}", part in parts)
+    # Every relationship's target is in the package, and every part has a content type.
+    import re
+    types = parts.get("[Content_Types].xml", "")
+    for rels, base in (("_rels/.rels", ""), ("word/_rels/document.xml.rels", "word/")):
+        for target in re.findall(r'Target="([^"]+)"', parts.get(rels, "")):
+            check(f"{name} docx target {target}", base + target in parts)
+    for part in parts:
+        if not part.endswith(".rels") and part != "[Content_Types].xml":
+            check(f"{name} docx type for {part}", ('PartName="/' + part + '"') in types or part.endswith(".xml"))
+    return parts
+
+
 def main():
     base = os.environ.get("OWF_TEST_DIR") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "build", "tests")
     os.makedirs(base, exist_ok=True)
@@ -184,6 +217,34 @@ def main():
     for want in ("<style:header>", "Header ", "<style:footer>", "<text:date/>", "fo:page-width="):
         check("prowrite odt styles has " + want, want in s)
     check("prowrite odt report header", "The header is also on the first page" in report, report)
+
+    docx, report = convert(work, "sample.pw", "docx")
+    parts = check_docx("prowrite", docx)
+    d = parts.get("word/document.xml", "")
+    for want in ("<w:jc w:val=\"center\"/>", "<w:b/>", "<w:sz w:val=\"36\"/>", "w:ascii=\"Liberation Sans\"",
+                 "<w:color w:val=\"CC0000\"/>", "<w:t xml:space=\"preserve\"> red</w:t>", "<w:tab w:val=\"right\" w:pos=\"2880\"/>",
+                 "w:line=\"480\" w:lineRule=\"auto\"", "<w:ind w:firstLine=\"720\"/>", "<w:pageBreakBefore/>",
+                 "<w:fldSimple w:instr=\" PAGE \">", "<w:headerReference w:type=\"default\" r:id=\"rId2\"/>",
+                 "<w:footerReference w:type=\"first\" r:id=\"rId3\"/>", "<w:titlePg/>", "<w:pgSz w:w=\"11906\" w:h=\"16838\"/>"):
+        check("prowrite docx document has " + want, want in d)
+    check("prowrite docx no first header", "<w:headerReference w:type=\"first\"" not in d, d[-600:])
+    check("prowrite docx header", "Header " in parts.get("word/header1.xml", ""))
+    check("prowrite docx footer date", "<w:fldSimple w:instr=\" DATE \">" in parts.get("word/footer1.xml", ""))
+    check("prowrite docx rels", "header1.xml" in parts.get("word/_rels/document.xml.rels", ""))
+    check("prowrite docx types", "wordprocessingml.header+xml" in parts.get("[Content_Types].xml", ""))
+    # Elements in w:pPr and w:rPr must be in the schema's order.
+    order_ppr = ["pStyle", "pageBreakBefore", "tabs", "spacing", "ind", "jc"]
+    order_rpr = ["rFonts", "b", "i", "strike", "color", "sz", "u", "vertAlign"]
+    import re
+    for block, order in (("pPr", order_ppr), ("rPr", order_rpr)):
+        for m in re.finditer(r"<w:%s>(.*?)</w:%s>" % (block, block), d):
+            names = re.findall(r"<w:(\w+)", m.group(1))
+            names = [n for n in names if n in order]
+            check(f"docx {block} order", names == sorted(names, key=order.index), m.group(0))
+    docx, _ = convert(work, "sample.ftxt", "docx")
+    parts = check_docx("ftxt", docx)
+    check("ftxt docx text", "Caf\u00e9" in parts.get("word/document.xml", ""))
+    check("ftxt docx no header part", "word/header1.xml" not in parts)
 
     # ProWrite -> FTXT -> text keeps the words
     ftxt, _ = convert(work, "sample.pw", "ftxt")

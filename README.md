@@ -13,8 +13,8 @@ formats".
 Status, 4 October 2026: designed (version 0.1), and phase W1 started.
 `DESIGN.md` is the design and `docs/FORMATS.md` the list of formats.
 libowf 0.1 reads IFF FTXT, ProWrite (IFF WORD), ANSI text and plain text,
-and writes ODT, HTML, FTXT and plain text. DOCX, RTF and reading ODT come
-next.
+and writes ODT, DOCX, HTML, FTXT and plain text. Reading ODT and DOCX, and
+RTF, come next.
 
 Its editor is WebCore, the engine inside WebKit, from our OpenBrowser port
 (`DalsinAI/openamigabrowser`). Its file formats are a separate C library,
