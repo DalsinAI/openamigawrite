@@ -1,0 +1,33 @@
+# OpenWrite's filters (libowf) and OWConvert, for this computer (the tests
+# run here). For AmigaOS 3.x use build-os3.sh.
+#   make            build/host/owconvert
+#   make test       the tests (needs python3)
+#   make check      the tests under AddressSanitizer and UBSan
+
+CC ?= cc
+CFLAGS ?= -O2
+WARN = -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings
+OWF_SRC = $(wildcard libowf/src/*.c)
+OUT = build/host
+
+all: $(OUT)/owconvert
+
+$(OUT)/owconvert: $(OWF_SRC) tools/owconvert.c libowf/include/owf.h libowf/src/owf_internal.h
+	mkdir -p $(OUT)
+	$(CC) $(WARN) $(CFLAGS) -DOWF_HAVE_ZLIB -Ilibowf/include -Ilibowf/src $(OWF_SRC) tools/owconvert.c -lz -o $@
+
+$(OUT)/owconvert-asan: $(OWF_SRC) tools/owconvert.c libowf/include/owf.h libowf/src/owf_internal.h
+	mkdir -p $(OUT)
+	$(CC) $(WARN) -O1 -g -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer -DOWF_HAVE_ZLIB \
+		-Ilibowf/include -Ilibowf/src $(OWF_SRC) tools/owconvert.c -lz -o $@
+
+test: $(OUT)/owconvert
+	python3 tests/run_tests.py $(OUT)/owconvert
+
+check: $(OUT)/owconvert-asan
+	python3 tests/run_tests.py $(OUT)/owconvert-asan
+
+clean:
+	rm -rf build
+
+.PHONY: all test check clean

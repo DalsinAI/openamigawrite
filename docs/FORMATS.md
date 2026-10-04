@@ -20,11 +20,11 @@ that the format holds and OpenWrite can show).
 
 | Format | Open | Save | Knowledge | Phase | State |
 | --- | --- | --- | --- | --- | --- |
-| ODT, OpenDocument Text (`.odt`), its template (`.ott`) and flat XML (`.fodt`) | Yes | Yes, the default | Spec: OASIS ODF 1.2 and 1.3, ISO/IEC 26300 | W1 | To do |
+| ODT, OpenDocument Text (`.odt`), its template (`.ott`) and flat XML (`.fodt`) | Yes | Yes, the default | Spec: OASIS ODF 1.2 and 1.3, ISO/IEC 26300 | W1 | Saving: Formatting (libowf 0.1: paragraphs, text formatting, tabs, headers, footers, fields; no lists, tables or pictures yet). Opening: to do |
 | DOCX, Office Open XML (`.docx`) and its template (`.dotx`) | Yes | Yes | Spec: ECMA-376 / ISO/IEC 29500 (transitional) | W1 | To do |
 | RTF (`.rtf`) | Yes | Yes | Spec: Microsoft's RTF 1.9.1 | W1 | To do |
-| HTML (`.html`) | Yes | Yes | Spec: HTML and CSS; OpenWrite's own shape (DESIGN.md section 5) | W1 | To do |
-| Plain text (`.txt`), Amiga ISO-8859-1 or UTF-8 | Yes | Yes | n/a | W1 | To do |
+| HTML (`.html`) | Yes | Yes | Spec: HTML and CSS; OpenWrite's own shape (DESIGN.md section 5) | W1 | Saving: Formatting (libowf 0.1). Opening: with the editor |
+| Plain text (`.txt`), Amiga ISO-8859-1 or UTF-8 | Yes | Yes | n/a | W1 | Full (libowf 0.1) |
 | Markdown (`.md`) | Yes | Yes | Spec: CommonMark (a subset) | W1 | To do |
 | PDF | No | Yes, and print | Through cairo | W4 | To do |
 | Word 97-2003 (`.doc`) | Later | No | Spec: Microsoft's [MS-DOC] | Later | To do |
@@ -34,9 +34,9 @@ that the format holds and OpenWrite can show).
 
 | Format | Open | Save | Knowledge | Phase | State |
 | --- | --- | --- | --- | --- | --- |
-| IFF FTXT, the Amiga's formatted text and its clipboard format | Yes | Yes (clipboard) | Spec: EA IFF 85; `CHRS` text with ISO 6429 style codes, `FONS` fonts | W2 | To do |
+| IFF FTXT, the Amiga's formatted text and its clipboard format | Yes | Yes (clipboard) | Spec: EA IFF 85; `CHRS` text with ISO 6429 style codes, `FONS` fonts | W2 | Formatting (libowf 0.1, from the spec; to check against files from real programs) |
 | AmigaGuide (`.guide`) | Yes | No | Spec: AmigaGuide's `@node`, `@{b}`, links | W2 | To do |
-| ANSI text, with the Amiga console's style and colour codes | Yes | No | Spec: ECMA-48 | W2 | To do |
+| ANSI text, with the Amiga console's style and colour codes | Yes | No | Spec: ECMA-48 | W2 | Formatting (libowf 0.1) |
 
 ## 3. Amiga word processors
 
@@ -45,7 +45,7 @@ here.
 
 | Program | Maker, years | Container | What we know | Phase | State |
 | --- | --- | --- | --- | --- | --- |
-| ProWrite | New Horizons Software, 1987-1993 | IFF `FORM WORD` | Spec (New Horizons, 1987): `FONT`, `COLR`, `DOC`, `HEAD`, `FOOT`, `PARA`, `TABS`, `PAGE`, `TEXT`, `FSCC` (font, style and colour changes), `PCTS`/`PINF` with an ILBM `BODY` for pictures; measures in decipoints (1/720 inch) | W2 | To do |
+| ProWrite | New Horizons Software, 1987-1993 | IFF `FORM WORD` | Spec (New Horizons, 1987): `FONT`, `COLR`, `DOC`, `HEAD`, `FOOT`, `PARA`, `TABS`, `PAGE`, `TEXT`, `FSCC` (font, style and colour changes), `PCTS`/`PINF` with an ILBM `BODY` for pictures; measures in decipoints (1/720 inch) | W2 | Formatting (libowf 0.1, from the spec; pictures not yet). To confirm with real files: the style bits, what the right margin is measured from, where tab positions start |
 | QuickWrite | New Horizons Software | Probably IFF `FORM WORD` | To confirm from a sample | W2 | To do |
 | Final Writer, Final Copy and Final Copy II | SoftWood, 1990-1997 | IFF | Reference: fw2odf (MIT, Python) reads `ATTR` (font sizes) and is working on `RULE` (spacing and tabs). Sample | W2 | To do |
 | Wordworth | Digita, 1992-1999 | IFF, its own form `WTXT`; an older Wordworth 3 format too | Sample. Wordworth could save RTF, which gives us a second copy of each sample to check against | W2 | To do |

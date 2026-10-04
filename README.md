@@ -10,8 +10,11 @@ We, 4 October 2026: "let's do the OpenWrite project", a word processor "that
 can import any of the Amiga formats, along with DOCX and the OpenDocument
 formats".
 
-Status, 4 October 2026: designed (version 0.1). `DESIGN.md` is the design and
-`docs/FORMATS.md` the list of formats.
+Status, 4 October 2026: designed (version 0.1), and phase W1 started.
+`DESIGN.md` is the design and `docs/FORMATS.md` the list of formats.
+libowf 0.1 reads IFF FTXT, ProWrite (IFF WORD), ANSI text and plain text,
+and writes ODT, HTML, FTXT and plain text. DOCX, RTF and reading ODT come
+next.
 
 Its editor is WebCore, the engine inside WebKit, from our OpenBrowser port
 (`DalsinAI/openamigabrowser`). Its file formats are a separate C library,
@@ -20,6 +23,25 @@ any Amiga, a 68000 included.
 
 Part of the Open family: it builds on OpenBrowser, OpenGadTools and
 OpenPrint rather than bundling its own versions of them.
+
+## Building and testing
+
+On Linux (the tests need Python 3 and zlib):
+
+```
+make            # build/host/owconvert
+make test       # the filter tests
+make check      # the same under AddressSanitizer and UBSan
+```
+
+For AmigaOS 3.x, any 68000, with bebbo's amiga-gcc 6.5 (the `os32` stove):
+
+```
+ZLIB_SRC=/path/to/zlib-1.3 ./build-os3.sh      # build/os3/OWConvert
+```
+
+Without `ZLIB_SRC`, ODT files are stored rather than deflated, which every
+reader accepts.
 
 ## Licence
 
