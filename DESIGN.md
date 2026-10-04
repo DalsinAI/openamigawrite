@@ -130,9 +130,12 @@ our own HTML chunk so formatting survives a copy from OpenWrite to OpenWrite
 or to OpenMail), and **spelling** through WebCore's text checker (Hunspell,
 phase W5).
 
-**Who writes them:** the OpenBrowser work owns `src/webcore`. We agree the
-calls with it, then add them there (one shared page layer), not a second copy
-in OpenWrite.
+**Who writes them:** the OpenBrowser work owns `src/webcore` and adds them
+there (one shared page layer, not a second copy in OpenWrite), after its
+current milestone, Microsoft's sign-in page. Every piece needs the WebKit
+build to compile and test, and the undo stack, the clipboard and printing
+touch its WebKit patches too. Appendix A is the shape we propose for it to
+implement against.
 
 ### 3.3 The window
 
@@ -313,19 +316,26 @@ noted in the import report.
   with an FPU (a 68040 or 68060, an AC090 or a PiStorm in practice), and a
   lot of Fast RAM: 128 MB at the least, 256 MB recommended. A graphics card
   screen (RTG) looks best; on AGA the page is dithered to the screen's pens.
-- **Size:** a WebCore program is about 120 MB today. OpenWrite turns off what
-  it does not use (network, media, WebGL), and we measure what that saves.
-  The bigger saving is **one shared WebCore** for OpenBrowser, OpenWrite and
-  OpenMail's rich compose, loaded once, which is a question for the browser
-  work (section 10).
+- **Size:** a WebCore program is about 115 MB today: 82 MB of code and
+  33 MB of ICU's data, linked into each program. In order:
+  1. ICU's data as one shared file (for example `LIBS:icudt78b.dat`) instead
+     of a copy in every program: 33 MB less each.
+  2. ICU trimmed to the languages and data we use.
+  3. One shared WebCore for OpenBrowser, OpenWrite and OpenMail's rich
+     compose: a `webcore.library` with data per opener (base-relative data
+     across WebCore and JavaScriptCore, an experiment), or one WebCore task
+     that the programs talk to through message ports. Worth doing once the
+     browser works; until then each program carries its own copy.
+
+  Turning off the network and media code saves only a few MB.
 - **The filters and C:OWConvert** run on any Amiga: a 68000 and 1 MB.
 
 ## 10. What OpenWrite needs from the rest of the Open family
 
 | From | What | State |
 | --- | --- | --- |
-| OpenBrowser (`openamigabrowser`) | WebCore in a window; the editing calls of section 3.2; undo stack; Amiga clipboard; print to cairo; a smaller build or a shared WebCore | WebCore draws pages; the window is being brought up |
-| `openamigacairo` | The PDF surface | Image surfaces only |
+| OpenBrowser (`openamigabrowser`) | WebCore in a window; the editing calls (Appendix A), undo stack, Amiga clipboard and print to cairo; ICU data as a shared file | WebCore draws pages; the window is being brought up. The editing calls come after its sign-in milestone |
+| `openamigacairo` | The PDF surface | Image surfaces only; we turn the PDF surface on (agreed with the browser work) |
 | OpenGadTools | Toolbar (0.1 has it), a font list, a ruler gadget, a colour picker | 0.1 in review |
 | OpenPrint | PDF jobs in, IPP out | Takes PDF jobs |
 | `openamigaimage` | libpng and libjpeg for pictures in documents | Built |
@@ -406,3 +416,74 @@ on the PC.
 3. **Test files from LibreOffice:** installing LibreOffice on this PC lets the
    tests make ODT, DOCX and RTF files in bulk. It is a download, so it waits
    for our yes.
+
+## Appendix A: proposed editing calls for `ob_webview.h`
+
+For the OpenBrowser work to implement in `src/webcore`, beside the calls
+`ob_webview.h` has today. Names and shapes are a proposal; the browser work
+may change them, and this appendix follows.
+
+```c
+/* Editing: the whole document takes typing (designMode). */
+void ob_webview_set_editable(OBWebView *view, int editable);
+
+/* Runs one of WebCore's editing commands by name (Editor::Command), at the
+ * selection: "Bold", "Italic", "Underline", "StrikeThrough", "Superscript",
+ * "Subscript", "FontName", "FontSize", "ForeColor", "BackColor",
+ * "JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyFull",
+ * "InsertOrderedList", "InsertUnorderedList", "Indent", "Outdent",
+ * "FormatBlock" (value "p", "h1"...), "CreateLink", "Unlink", "InsertImage",
+ * "InsertHTML", "InsertText", "Delete", "SelectAll", "Undo", "Redo", "Cut",
+ * "Copy", "Paste", "PasteAsPlainText". Values are UTF-8. 1 if it ran. */
+int ob_webview_command(OBWebView *view, const char *name, const char *value);
+
+/* The command's state at the selection: OB_COMMAND_ENABLED and OB_COMMAND_ON
+ * bits (bold is on here), and its value (the font's name) copied into value,
+ * at most valueSize bytes. */
+enum { OB_COMMAND_ENABLED = 1 << 0, OB_COMMAND_ON = 1 << 1 };
+int ob_webview_command_state(OBWebView *view, const char *name, char *value, int valueSize);
+
+/* Paragraph styles: sets the class of every block in the selection
+ * (OpenWrite's styles are CSS classes, DESIGN.md section 5), and reads the
+ * class of the block at the caret. */
+void ob_webview_set_block_class(OBWebView *view, const char *tagName, const char *className);
+int ob_webview_block_class(OBWebView *view, char *className, int size);
+
+/* The document out, as UTF-8 HTML with its doctype, and as plain text (for
+ * word counts). The caller frees the result with ob_free(). Documents go in
+ * with the existing ob_webview_load_html(). */
+char *ob_webview_get_html(OBWebView *view);
+char *ob_webview_get_text(OBWebView *view);
+void ob_free(void *memory);
+
+/* Find, from the selection. 1 when found (and selected). */
+enum { OB_FIND_BACKWARDS = 1 << 0, OB_FIND_CASE = 1 << 1, OB_FIND_WRAP = 1 << 2, OB_FIND_WORDS = 1 << 3 };
+int ob_webview_find(OBWebView *view, const char *text, int flags);
+
+/* Pages. Sizes in points (1/72 inch). print_begin lays the document out in
+ * pages (PrintContext) and returns how many; print_page draws one onto a
+ * cairo context (a cairo_t *, so this header needs no cairo), scaled to
+ * points, for a PDF surface or a printer bitmap. */
+typedef struct {
+    double width, height;
+    double marginTop, marginRight, marginBottom, marginLeft;
+} OBPageSetup;
+int ob_webview_print_begin(OBWebView *view, const OBPageSetup *setup);
+int ob_webview_print_page(OBWebView *view, int page, void *cairoContext);
+void ob_webview_print_end(OBWebView *view);
+
+/* The page layout view: WebCore's paginated mode, pages of this height with
+ * a gap between them; 0 turns it off. */
+void ob_webview_set_paginated(OBWebView *view, int pageHeight, int gap);
+```
+
+New members of `OBWebViewCallbacks` (any may be NULL):
+
+```c
+    /* The selection or caret moved: update the toolbar's states. */
+    void (*selection_changed)(void *context);
+    /* The document changed: it is now unsaved. */
+    void (*content_changed)(void *context);
+    /* Whether Undo and Redo can run now (for the menu and the toolbar). */
+    void (*undo_changed)(void *context, int canUndo, int canRedo);
+```
