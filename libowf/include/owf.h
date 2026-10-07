@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-#define OWF_VERSION "1.0.1"
+#define OWF_VERSION "1.0.2"
 
 /* Results. */
 enum {
