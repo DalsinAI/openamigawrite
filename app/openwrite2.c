@@ -525,12 +525,6 @@ static int screen_depth(void)
 }
 
 
-static void raised(struct RastPort *rp, int x, int y, int w, int h)
-{
-    ogt_fill(&ctx, rp, "button", x + 1, y + 1, w - 2, h - 2);
-    ogt_bevel(rp, ogt_pen(&ctx, "button.shine"), ogt_pen(&ctx, "button.shadow"),
-              x, y, w, h);
-}
 
 
 static owf_doc *blank_document(void)
