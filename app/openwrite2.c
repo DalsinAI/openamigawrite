@@ -524,13 +524,6 @@ static int screen_depth(void)
     return scr->RastPort.BitMap->Depth;
 }
 
-static void field(struct RastPort *rp, const char *fill, int x, int y, int w, int h)
-{
-    if (w < 3 || h < 3) return;
-    ogt_fill(&ctx, rp, fill, x + 1, y + 1, w - 2, h - 2);
-    ogt_bevel(rp, ogt_pen(&ctx, "string.shadow"), ogt_pen(&ctx, "string.shine"),
-              x, y, w, h);
-}
 
 static void raised(struct RastPort *rp, int x, int y, int w, int h)
 {
@@ -539,20 +532,6 @@ static void raised(struct RastPort *rp, int x, int y, int w, int h)
               x, y, w, h);
 }
 
-static void format_button_draw(struct RastPort *rp, const box *b,
-                               const char *label, int active, int bold)
-{
-    if (active) {
-        ogt_box(rp, ogt_pen(&ctx, "selection.inactive"), b->x + 1, b->y + 1,
-                b->w - 2, b->h - 2);
-        ogt_frame(rp, ogt_pen(&ctx, "accent"), b->x, b->y, b->w, b->h);
-    } else raised(rp, b->x, b->y, b->w, b->h);
-    if (bold) ogt_bold(rp, 1);
-    ogt_text(rp, ogt_pen(&ctx, "label"),
-             b->x + (b->w - ogt_text_width(rp, label)) / 2,
-             b->y + (b->h - fh) / 2, label, b->w - 4);
-    if (bold) ogt_bold(rp, 0);
-}
 
 static owf_doc *blank_document(void)
 {
@@ -1301,10 +1280,6 @@ static void render_text_run(void *ud, int paragraph, int run_index,
     SetSoftStyle(rp, FS_NORMAL, FSF_BOLD | FSF_ITALIC | FSF_UNDERLINED);
 }
 
-static int point_in_box(const box *b, int x, int y)
-{
-    return b && x >= b->x && y >= b->y && x < b->x + b->w && y < b->y + b->h;
-}
 
 static int hit_position(int mx, int my, ow_position *out)
 {
