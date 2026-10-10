@@ -35,16 +35,16 @@ typedef struct ogt_row {
     int disabled;
 } ogt_row;
 
-typedef struct ogt_section {
+typedef struct ogt_isection {
     const char *title;
     int n;
     ogt_row row[OGT_SEC_ROWS];
     int y, h;                   /* where it landed */
-} ogt_section;
+} ogt_isection;
 
 typedef struct ogt_sections {
     int n;
-    ogt_section sec[OGT_SEC_MAX];
+    ogt_isection sec[OGT_SEC_MAX];
     int x, y, w, h;             /* the column */
     int label_w, lh, gap;       /* the labels' column, a row's height, the space between rows */
     struct TextAttr *ta;

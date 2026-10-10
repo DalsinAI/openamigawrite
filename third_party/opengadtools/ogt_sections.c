@@ -29,7 +29,7 @@ void ogt_sections_init(ogt_sections *s, int x, int y, int w, int label_w, int lh
 
 int ogt_sections_add(ogt_sections *s, const char *title, const ogt_row *rows, int n)
 {
-    ogt_section *sec;
+    ogt_isection *sec;
     if (s->n >= OGT_SEC_MAX) return -1;
     sec = &s->sec[s->n];
     sec->title = title;
@@ -46,7 +46,7 @@ struct Gadget *ogt_sections_gadgets(ogt_sections *s, struct Gadget *g)
     ng.ng_TextAttr = s->ta;
     ng.ng_VisualInfo = s->vi;
     for (i = 0; i < s->n && g; i++) {
-        ogt_section *sec = &s->sec[i];
+        ogt_isection *sec = &s->sec[i];
         sec->y = y;
         y += TITLE_H(s->lh);
         for (k = 0; k < sec->n && g; k++) {
@@ -118,7 +118,7 @@ void ogt_sections_draw(ogt_sections *s, struct Window *win, ogt_ctx *ctx)
     int i;
     LONG text = ogt_pen(ctx, "label"), line = ogt_pen(ctx, "muted");
     for (i = 0; i < s->n; i++) {
-        ogt_section *sec = &s->sec[i];
+        ogt_isection *sec = &s->sec[i];
         int ty = sec->y + (TITLE_H(s->lh) - rp->TxHeight) / 2 - 1;
         ogt_bold(rp, 1);
         ogt_text(rp, text, s->x, ty, sec->title, s->w);
