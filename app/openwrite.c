@@ -62,7 +62,7 @@ struct Library *GadToolsBase = NULL, *AslBase = NULL, *DiskfontBase = NULL, *Lay
 struct Library *DataTypesBase = NULL, *CyberGfxBase = NULL;
 struct RxsLib *RexxSysBase = NULL;
 
-#define VERSION_TEXT "OpenWrite 1.0.2 (7.10.2026)"
+#define VERSION_TEXT "OpenWrite 1.0.3 (10.10.2026)"
 static const char version[] __attribute__((used)) =
     "$VER: " VERSION_TEXT " MIT, Copyright (c) 2026 Dalsin Limited";
 
@@ -131,8 +131,8 @@ static struct NewMenu menus[] = {
     { NM_ITEM, "Fit Page", NULL, 0, 0, (APTR)M_ZOOM_FIT_PAGE },
     { NM_ITEM, "Fit Width", NULL, 0, 0, (APTR)M_ZOOM_FIT_WIDTH },
     { NM_ITEM, "Toolbar", NULL, 0, 0, NULL },
-    { NM_SUB, "Icons and text", NULL, CHECKIT | CHECKED, ~1 & 7, (APTR)M_TB_BOTH },
-    { NM_SUB, "Icons only", NULL, CHECKIT, ~2 & 7, (APTR)M_TB_ICONS },
+    { NM_SUB, "Icons and text", NULL, CHECKIT, ~1 & 7, (APTR)M_TB_BOTH },
+    { NM_SUB, "Icons only", NULL, CHECKIT | CHECKED, ~2 & 7, (APTR)M_TB_ICONS },
     { NM_SUB, "Text only", NULL, CHECKIT, ~4 & 7, (APTR)M_TB_TEXT },
     { NM_ITEM, "Theme", NULL, 0, 0, NULL },
     { NM_SUB, "Open", NULL, 0, 0, (APTR)M_THEME_OPEN },
@@ -238,7 +238,7 @@ static ogt_ctx ctx;
 static ogt_toolbar tb;
 static char theme_name[48] = "Open";
 static int theme_mode = OGT_LIGHT;
-static int tb_style = OGT_TB_ICONS_TEXT;
+static int tb_style = OGT_TB_ICONS;     /* icons only to start (the Team's rule, 10 October 2026) */
 
 static owf_doc *doc;
 static ow_editor *editor;

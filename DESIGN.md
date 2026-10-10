@@ -260,7 +260,8 @@ and gives it to the filters.
 - **Help:** OpenWrite Guide (AmigaGuide).
 
 **Toolbar:** New, Open, Save, Print, PDF | Cut, Copy, Paste | Undo, Redo |
-Find. Icons with text by default; icons only or text only from the View menu.
+Find. Icons only by default (every Open app starts with icons, the Team's rule
+of 10 October 2026); icons and text or text only from the View menu.
 
 **Format bar:** style (cycle), font (a list from fontconfig), size, bold,
 italic, underline, text colour, the four alignments, numbered list, bullets,

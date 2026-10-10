@@ -69,7 +69,8 @@ The page is the visual focus. Application chrome is compact.
 
 The main toolbar follows the Open-app rule:
 
-- Icons and text is the default.
+- Icons only is the default: every Open app starts with icons, not icons
+  and text (the Team's rule, 10 October 2026).
 - View can select icons and text, icons only, or text only.
 - Every action remains available from a menu.
 - No essential action exists only as a keyboard shortcut.
