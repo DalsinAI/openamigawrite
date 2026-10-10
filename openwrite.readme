@@ -37,8 +37,11 @@ its own licence.
 
 Source: https://github.com/DalsinAI/openamigawrite
 
-New in 1.0.3 (10 October 2026): the toolbar starts with icons only, as in
-every Open app. View > Toolbar still chooses icons and text, or text only.
+New in 1.0.3 (10 October 2026): the window first opens at 800 x 600, in
+the middle of the space beside OpenDock (or all of that space on a smaller
+screen), and the toolbar starts with icons only, as in every Open app. A
+size you give the window is kept. View > Toolbar still chooses icons and
+text, or text only.
 
 New in 1.0.2: DOCX and ODT files saved on the Amiga by 1.0.1 were
 corrupt; they are right now (please update). Also: Find shows the match,

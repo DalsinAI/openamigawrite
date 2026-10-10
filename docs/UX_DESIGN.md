@@ -65,6 +65,12 @@ At normal desktop widths:
 
 The page is the visual focus. Application chrome is compact.
 
+The window first opens at 800 x 600, centred in the screen's free area (below
+the title bar and beside OpenDock), and never larger than that area: on a
+screen smaller than 800 x 600 it fills the free area. A size the user gives
+the window is kept (OpenWindows remembers it). This is the rule for every Open
+app (10 October 2026).
+
 ## Toolbar
 
 The main toolbar follows the Open-app rule:
